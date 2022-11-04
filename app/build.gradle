@@ -34,6 +34,9 @@ android {
 
 dependencies {
 
+    // OkHttp
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.10.0'
     // Picasso
     implementation 'com.squareup.picasso:picasso:2.8'
     // Retrofit
@@ -46,8 +49,7 @@ dependencies {
     // VK
     implementation 'com.vk:android-sdk-core:3.5.2'
     implementation 'com.vk:android-sdk-api:3.5.2'
-    // Instagram
-    implementation 'com.github.instagram4j:instagram4j:2.0.7'
+
     def lifecycle_version = "2.5.1"
     implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
