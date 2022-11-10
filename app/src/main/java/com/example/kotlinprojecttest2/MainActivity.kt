@@ -1,21 +1,25 @@
 package com.example.kotlinprojecttest2
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.kotlinprojecttest2.data.remote.quest.GetJsonResponse
 import com.example.kotlinprojecttest2.data.remote.quest.QuestApi
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-class MainActivity : AppCompatActivity() {
 
+class MainActivity : AppCompatActivity() {
+    private val compositeDisposable = CompositeDisposable()
     lateinit var questApi: QuestApi
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,13 +50,34 @@ class MainActivity : AppCompatActivity() {
 
         questApi = retrofit.create(QuestApi::class.java)
 
-        val res = questApi.get_json()
+        compositeDisposable.add(questApi.get_vk_json()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe()
+            .subscribe({
+                findUrls(it)
+            },{
+                //println(it.stackTrace.toString())
+            })
+        )}
+
+    fun findUrls(res : GetJsonResponse) {
+        //TODO : add post support (images in one block)
+
+        val urls_list: MutableList<String> = ArrayList()
+
+        res.resp?.items?.forEach {
+            it.attachments?.forEach {
+                it?.photo?.sizes?.last()?.url?.let { it1 -> urls_list.add(it1) }
+            }
+        }
+        Log.e("URLS_LIST", urls_list.toString())
 
     }
 }
+
+
+
+
 
 
 
@@ -110,3 +135,4 @@ class MainActivity : AppCompatActivity() {
 //            .build()
 //        val request: VKRequest<*> =
 //            VKRequest<Any?>("friends.get", getApiVersion())
+
