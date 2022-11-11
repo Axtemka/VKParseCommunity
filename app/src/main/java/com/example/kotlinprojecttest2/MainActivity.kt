@@ -61,78 +61,30 @@ class MainActivity : AppCompatActivity() {
         )}
 
     fun findUrls(res : GetJsonResponse) {
-        //TODO : add post support (images in one block)
 
-        val urls_list: MutableList<String> = ArrayList()
+        val res_list: MutableList<MutableList<String>> = ArrayList()
 
         res.resp?.items?.forEach {
-            it.attachments?.forEach {
-                it?.photo?.sizes?.last()?.url?.let { it1 -> urls_list.add(it1) }
+            if(it.marked_as_ads==0){
+                val inter_list : MutableList<String> = ArrayList()
+
+                // Checking for empty text
+                if(!it.text.isNullOrEmpty()){
+                    inter_list.add(it.text)
+                }
+
+                // Adding existing urls to intermediate list
+                it.attachments?.forEach {
+                    it?.photo?.sizes?.last()?.url?.let { it1 -> inter_list.add(it1) }
+                }
+
+                // checking for empty intermediate list
+                if (!inter_list.isNullOrEmpty()){
+                    res_list.add(inter_list)
+                }
             }
         }
-        Log.e("URLS_LIST", urls_list.toString())
-
+        // debug output (comment if not necessary)
+        Log.e("URLS_LIST", res_list.toString())
     }
 }
-
-
-
-
-
-
-
-//        var connection: HttpURLConnection? = null
-//        val reader: BufferedReader
-//        var line: String?
-//        val responseContent = StringBuilder()
-//        val text: TextView = findViewById(R.id.text1)
-//        try {
-//            val url = URL("https://vk.com/memzavod1523l")
-//            connection = url.openConnection() as HttpURLConnection
-//            connection.setRequestMethod("GET")
-//            //connection.setRequestProperty();
-//            connection.setConnectTimeout(10000)
-//            connection.setReadTimeout(10000)
-//            val status: Int = connection.getResponseCode()
-//            if (status > 299) {
-//                reader = BufferedReader(InputStreamReader(connection.getErrorStream()))
-//                while (reader.readLine().also { line = it } != null) {
-//                    responseContent.append(line)
-//                }
-//                reader.close()
-//            } else {
-//                reader = BufferedReader(InputStreamReader(connection.getInputStream()))
-//                while (reader.readLine().also { line = it } != null) {
-//                    responseContent.append(line)
-//                }
-//                reader.close()
-//            }
-//            println(responseContent.toString())
-//            text.text = responseContent.toString()
-//        } catch (e: IOException) {
-//            e.printStackTrace()
-//        } finally {
-//            if (connection != null) {
-//                connection.disconnect()
-//            }
-//}
-//
-//}
-//        val request: VKRequest<*> = VKRequest<Any?>("photos.getAll", getApiVersion())
-//        request.params["owner_id:626417005"]
-//        val res = VK.execute(request)
-//        System.out.println(res.toString())
-//        VKApiManager.execute(call)
-//        val request: VKRequest<*> =
-//            VKRequest<Any?>("users.get", getApiVersion())
-//        get(VKParameters.from(VKApiConst.USER_IDS, "1,2"))
-//        System.out.println(res)
-//        text.text =
-//        val call = VKMethodCall.Builder()
-//            .method("photos.getAll")
-//            .args("fields", "photo_200")
-//            .version(getApiVersion())
-//            .build()
-//        val request: VKRequest<*> =
-//            VKRequest<Any?>("friends.get", getApiVersion())
-
