@@ -2,11 +2,17 @@ package com.example.kotlinprojecttest2
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
 import com.example.kotlinprojecttest2.data.remote.quest.GetJsonResponse
 import com.example.kotlinprojecttest2.data.remote.quest.QuestApi
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
+import android.widget.Button;
+import android.widget.ImageView;
 
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -25,6 +31,38 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = ""
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> finish()
+            R.id.vk -> {
+                Toast.makeText(this, "Vk", Toast.LENGTH_SHORT).show()
+            }
+            R.id.telegram -> {
+                Toast.makeText(this, "Telegram", Toast.LENGTH_SHORT).show()
+            }
+            R.id.reddit -> {
+                Toast.makeText(this, "Reddit", Toast.LENGTH_SHORT).show()
+            }
+            R.id.tiktok -> {
+                Toast.makeText(this, "TikTok", Toast.LENGTH_SHORT).show()
+            }
+            R.id.instagram -> {
+                Toast.makeText(this, "Instagram", Toast.LENGTH_SHORT).show()
+            }
+            R.id.settings -> {
+                Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
+            }
+        }
+        return true
     }
 
     fun vkParseOnClick(view: View){
@@ -32,7 +70,6 @@ class MainActivity : AppCompatActivity() {
         configureRetrofit()
     }
     private fun configureRetrofit(){
-        val text: TextView = findViewById(R.id.text1)
 
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -69,7 +106,7 @@ class MainActivity : AppCompatActivity() {
                 val inter_list : MutableList<String> = ArrayList()
 
                 // Checking for empty text
-                if(!it.text.isNullOrEmpty()){
+                if(it.text.isNotEmpty()){
                     inter_list.add(it.text)
                 }
 
@@ -79,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 // checking for empty intermediate list
-                if (!inter_list.isNullOrEmpty()){
+                if (inter_list.isNotEmpty()){
                     res_list.add(inter_list)
                 }
             }

@@ -1,4 +1,8 @@
 <resources>
-    <string name="app_name">KotlinProjectTest2</string>
+    <string name="app_name">Memwor</string>
+    <string name="popup_menu_item_4">Popup menu item 4</string>
+    <string name="popup_menu_item_5">Popup menu item 5</string>
+    <string name="popup_menu_item_6">Popup menu item 6</string>
+    <string name="popupmenu">popupmenu</string>
     <integer name="com_vk_sdk_AppId">51454525</integer>
 </resources>
