@@ -30,10 +30,17 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    buildFeatures{
+        viewBinding true
+    }
 }
 
 dependencies {
-
+    // Design
+    //implementation 'com.google.android..material:material:1.0.0'
+    // Date/Time
+    //implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
+    implementation 'org.ocpsoft.prettytime:prettytime:5.0.4.Final'
     // OkHttp
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.10.0'

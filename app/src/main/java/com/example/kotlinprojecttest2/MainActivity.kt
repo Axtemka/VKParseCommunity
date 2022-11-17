@@ -5,14 +5,13 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import com.example.kotlinprojecttest2.data.remote.quest.GetJsonResponse
 import com.example.kotlinprojecttest2.data.remote.quest.QuestApi
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.PopupMenu;
-import android.widget.Button;
-import android.widget.ImageView;
+import com.example.kotlinprojecttest2.databinding.ActivityMainBinding
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -25,12 +24,31 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 class MainActivity : AppCompatActivity() {
+    private val fragList = listOf(
+        Vk.newInstance(),
+        Telegram.newInstance(),
+        Reddit.newInstance(),
+        TikTok.newInstance()
+    )
+    private val fragListTitles = listOf(
+        "Vk",
+        "Telegram",
+        "Reddit",
+        "TikTok"
+    )
+    private lateinit var binding: ActivityMainBinding
     private val compositeDisposable = CompositeDisposable()
     lateinit var questApi: QuestApi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        val adapter = VpAdapter(this, fragList)
+        binding.vp2.adapter = adapter
+        TabLayoutMediator(binding.ourtablayout, binding.vp2){
+            tab, pos -> tab.text = fragListTitles[pos]
+        }.attach()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = ""
     }
@@ -122,6 +140,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         // debug output (comment if not necessary)
-        Log.e("URLS_LIST", res_list.toString())
+        //Log.e("URLS_LIST", res_list.toString())
     }
 }
