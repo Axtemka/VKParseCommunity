@@ -19,7 +19,7 @@ class vkParse() {
     init {
         configureRetrofit()
     }
-    private fun configureRetrofit(){
+    private fun configureRetrofit() {
 
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -36,41 +36,43 @@ class vkParse() {
             .build()
         val questApi: QuestApi = retrofit.create(QuestApi::class.java)
         val compositeDisposable = CompositeDisposable()
-        compositeDisposable.add(questApi.getVkJson()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                //findUrls(it)
-            },{
-                //println(it.stackTrace.toString())
-            })
-        )}
+//        compositeDisposable.add(questApi.getVkJson(domain = "memzavod1523l", access_token = "9fb466189fb466189fb46618449ca5442599fb49fb46618fce51db6b049cb80918bb78e", ver = "5.131")
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe({
+//                //findUrls(it)
+//            },{
+//                //println(it.stackTrace.toString())
+//            })
+//        )}
 
-    fun findUrls(res : GetJsonResponse) {
-        res.resp?.items?.forEach {
-            if(it.marked_as_ads==0){
-                val inter_list : MutableList<String> = ArrayList()
+        fun findUrls(res: GetJsonResponse) {
+            res.resp?.items?.forEach {
+                if (it.marked_as_ads == 0) {
+                    val inter_list: MutableList<String> = ArrayList()
 
-                // Checking for empty text
-                if(it.text.isNotEmpty()){
-                    inter_list.add(it.text)
-                }
+                    // Checking for empty text
+                    if (it.text.isNotEmpty()) {
+                        inter_list.add(it.text)
+                    }
 
-                // Adding existing urls to intermediate list
-                it.attachments?.forEach {
-                    it?.photo?.sizes?.last()?.url?.let { it1 -> inter_list.add(it1) }
-                }
+                    // Adding existing urls to intermediate list
+                    it.attachments?.forEach {
+                        it?.photo?.sizes?.last()?.url?.let { it1 -> inter_list.add(it1) }
+                    }
 
-                // checking for empty intermediate list
-                if (inter_list.isNotEmpty()){
-                    res_list.add(inter_list)
+                    // checking for empty intermediate list
+                    if (inter_list.isNotEmpty()) {
+                        res_list.add(inter_list)
+                    }
                 }
             }
+            // debug output (comment if not necessary)
+            //Log.e("URLS_LIST", res_list.toString())
         }
-        // debug output (comment if not necessary)
-        //Log.e("URLS_LIST", res_list.toString())
-    }
-    fun getList(): MutableList<MutableList<String>> {
-        return res_list
+
+        fun getList(): MutableList<MutableList<String>> {
+            return res_list
+        }
     }
 }

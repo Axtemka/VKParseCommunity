@@ -1,16 +1,19 @@
 import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.kotlinprojecttest2.data.remote.quest.GetVKJsonResponse
 import com.example.kotlinprojecttest2.data.remote.quest.QuestApi
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
-class ResponseViewer (private val platformName:String) {
+class ResponseViewer (private val platformName:String): ViewModel(){
     private val res_list: MutableList<MutableList<String>> = ArrayList()
     private val compositeDisposable = CompositeDisposable()
     lateinit var questApi: QuestApi
@@ -44,81 +47,86 @@ class ResponseViewer (private val platformName:String) {
             .build()
         //questApi.getVkJson(domain = "memzavod1523l", access_token = "9fb466189fb466189fb46618449ca5442599fb49fb46618fce51db6b049cb80918bb78e", ver = "5.131")
         questApi = retrofit.create(QuestApi::class.java)
-        compositeDisposable.add(
-            questApi.getVkJson()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    vkFindUrls(it)
-                }, {
-                    //println(it.stackTrace.toString())
-                })
-        )
+        viewModelScope.launch{
+            try{
+                questApi.getVkJson(domain = "memzavod1523l", access_token = "9fb466189fb466189fb46618449ca5442599fb49fb46618fce51db6b049cb80918bb78e", ver = "5.131")
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        vkFindUrls(it)
+                    }, {
+                        //println(it.stackTrace.toString())
+                    })
+            }catch(e: Exception){
+                e.localizedMessage?.let { Log.e("TAG", it) }
+            }
+
+        }
     }
 
     private fun redditConfigureRetrofit() {
 
-        val httpLoggingInterceptor = HttpLoggingInterceptor()
-        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(httpLoggingInterceptor)
-            .build()
-
-        //TODO(Add https for reddit api methods)
-        val retrofit = Retrofit.Builder()
-            .baseUrl("")
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-
-        questApi = retrofit.create(QuestApi::class.java)
-
-        compositeDisposable.add(
-            questApi.getRedditJson()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    redditFindUrls(it)
-                }, {
-                    //println(it.stackTrace.toString())
-                })
-        )
+//        val httpLoggingInterceptor = HttpLoggingInterceptor()
+//        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+//
+//        val okHttpClient = OkHttpClient.Builder()
+//            .addInterceptor(httpLoggingInterceptor)
+//            .build()
+//
+//        //TODO(Add https for reddit api methods)
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("")
+//            .client(okHttpClient)
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+//            .build()
+//
+//        questApi = retrofit.create(QuestApi::class.java)
+//
+//        compositeDisposable.add(
+//            questApi.getRedditJson()
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe({
+//                    redditFindUrls(it)
+//                }, {
+//                    //println(it.stackTrace.toString())
+//                })
+//        )
     }
 
-    private fun telegramConfigureRetrofit() {
+//    private fun telegramConfigureRetrofit() {
+//
+//        val httpLoggingInterceptor = HttpLoggingInterceptor()
+//        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+//
+//        val okHttpClient = OkHttpClient.Builder()
+//            .addInterceptor(httpLoggingInterceptor)
+//            .build()
+//
+//        //TODO(Add https for telegram api methods)
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("")
+//            .client(okHttpClient)
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+//            .build()
+//
+//        questApi = retrofit.create(QuestApi::class.java)
+//
+//        compositeDisposable.add(
+//            questApi.getTelegramJson()
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe({
+//                    telegramFindUrls(it)
+//                }, {
+//                    //println(it.stackTrace.toString())
+//                })
+//        )
+//    }
 
-        val httpLoggingInterceptor = HttpLoggingInterceptor()
-        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(httpLoggingInterceptor)
-            .build()
-
-        //TODO(Add https for telegram api methods)
-        val retrofit = Retrofit.Builder()
-            .baseUrl("")
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-
-        questApi = retrofit.create(QuestApi::class.java)
-
-        compositeDisposable.add(
-            questApi.getTelegramJson()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    telegramFindUrls(it)
-                }, {
-                    //println(it.stackTrace.toString())
-                })
-        )
-    }
-
-    private fun vkFindUrls(res: GetVKJsonResponse) {
+    fun vkFindUrls(res: GetVKJsonResponse) {
         //TODO(Add return statement)
 
         res.vkResponse?.items?.forEach {
@@ -143,7 +151,7 @@ class ResponseViewer (private val platformName:String) {
     }
 
     //TODO(Replace string with reddit data class response)
-    private fun redditFindUrls(res: String) {
+    fun redditFindUrls(res: String) {
 
         //TODO(Add to QuestApi and data.remote.quest reddit methods)
         //TODO(Add return statement)
@@ -179,7 +187,7 @@ class ResponseViewer (private val platformName:String) {
     }
 
     //TODO(Replace string with telegram data class response)
-    private fun telegramFindUrls(res: String) {
+     fun telegramFindUrls(res: String) {
 
         //TODO(Add to QuestApi and data.remote.quest telegram methods)
         //TODO(Add return statement)
